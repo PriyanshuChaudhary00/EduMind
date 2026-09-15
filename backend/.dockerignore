@@ -1,0 +1,11 @@
+venv/
+.env
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.pytest_cache/
+*.db
+*.sqlite3
+edumind.db
+uploads/
