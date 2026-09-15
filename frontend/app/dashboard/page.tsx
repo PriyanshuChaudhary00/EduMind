@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { apiRequest } from "@/lib/api";
 import {
   Upload,
   MessageSquare,
@@ -18,9 +19,34 @@ import {
   ArrowUpRight
 } from "lucide-react";
 
+interface DashboardStats {
+  documents_count: number;
+  questions_count: number;
+  quizzes_count: number;
+  study_time_hours: number;
+}
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [stats, setStats] = useState<DashboardStats>({
+    documents_count: 0,
+    questions_count: 0,
+    quizzes_count: 0,
+    study_time_hours: 0,
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const data = await apiRequest<DashboardStats>("/stats/dashboard");
+        setStats(data);
+      } catch (err) {
+        console.error("Failed to load stats", err);
+      }
+    }
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -109,7 +135,7 @@ export default function DashboardPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">Documents</span>
             <FileText className="w-4 h-4 text-indigo-500" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">0</div>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.documents_count}</div>
           <p className="text-xs text-slate-400 mt-1">Uploaded study files</p>
         </div>
 
@@ -118,7 +144,7 @@ export default function DashboardPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">Questions</span>
             <HelpCircle className="w-4 h-4 text-blue-500" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">0</div>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.questions_count}</div>
           <p className="text-xs text-slate-400 mt-1">AI study inquiries</p>
         </div>
 
@@ -127,7 +153,7 @@ export default function DashboardPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">Quizzes</span>
             <Award className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">0</div>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.quizzes_count}</div>
           <p className="text-xs text-slate-400 mt-1">Tests completed</p>
         </div>
 
@@ -136,7 +162,7 @@ export default function DashboardPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">Study Time</span>
             <Clock className="w-4 h-4 text-purple-500" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">0h</div>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.study_time_hours}h</div>
           <p className="text-xs text-slate-400 mt-1">Total learning duration</p>
         </div>
       </div>

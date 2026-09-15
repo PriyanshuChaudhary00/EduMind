@@ -6,6 +6,7 @@ import os
 from app.routes.auth import router as auth_router
 from app.routes.documents import router as documents_router
 from app.routes.chat import router as chat_router
+from app.routes.stats import router as stats_router
 
 from sqlalchemy import text
 
@@ -41,6 +42,8 @@ app.include_router(documents_router, prefix=f"{settings.API_V1_STR}/documents", 
 app.include_router(documents_router, prefix="/documents", tags=["documents"])
 app.include_router(chat_router, prefix=f"{settings.API_V1_STR}/chat", tags=["chat"])
 app.include_router(chat_router, prefix="/chat", tags=["chat"])
+app.include_router(stats_router, prefix=f"{settings.API_V1_STR}/stats", tags=["stats"])
+app.include_router(stats_router, prefix="/stats", tags=["stats"])
 
 
 @app.get("/")
