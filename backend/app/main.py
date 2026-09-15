@@ -2,7 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import engine, Base
+import os
 from app.routes.auth import router as auth_router
+from app.routes.documents import router as documents_router
+
+# Ensure upload directory exists on startup
+os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
 # Create database tables automatically (for dev & rapid prototyping)
 Base.metadata.create_all(bind=engine)
@@ -24,8 +29,9 @@ app.add_middleware(
 
 # Register API Routers
 app.include_router(auth_router, prefix=settings.API_V1_STR)
-# Convenience prefix so /auth and /api/v1/auth both work
 app.include_router(auth_router)
+app.include_router(documents_router, prefix=f"{settings.API_V1_STR}/documents", tags=["documents"])
+app.include_router(documents_router, prefix="/documents", tags=["documents"])
 
 
 @app.get("/")
