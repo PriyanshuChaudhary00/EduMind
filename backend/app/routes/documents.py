@@ -1,6 +1,6 @@
 import os
 import uuid
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.utils.dependencies import get_current_user
@@ -8,6 +8,7 @@ from app.models.user import User
 from app.models.document import Document, DocumentStatus
 from app.schemas.document import DocumentResponse, DocumentListResponse
 from app.config import settings
+from app.services.document_processor import process_document
 
 router = APIRouter()
 
@@ -19,6 +20,7 @@ ALLOWED_MIME_TYPES = {
 
 @router.post("/upload", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
 async def upload_document(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -66,6 +68,9 @@ async def upload_document(
     db.add(new_doc)
     db.commit()
     db.refresh(new_doc)
+    
+    # Trigger background processing
+    background_tasks.add_task(process_document, new_doc.id)
     
     return new_doc
 

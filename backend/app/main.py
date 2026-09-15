@@ -6,10 +6,16 @@ import os
 from app.routes.auth import router as auth_router
 from app.routes.documents import router as documents_router
 
+from sqlalchemy import text
+
 # Ensure upload directory exists on startup
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
-# Create database tables automatically (for dev & rapid prototyping)
+# Create vector extension and database tables automatically
+with engine.connect() as conn:
+    conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+    conn.commit()
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
