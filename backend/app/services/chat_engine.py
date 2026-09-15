@@ -20,7 +20,7 @@ def generate_answer(query: str, user_id: int, db: Session, document_id: Optional
     
     # 1. Embed the user's query
     embed_response = client.models.embed_content(
-        model="text-embedding-004",
+        model="gemini-embedding-2",
         contents=query
     )
     query_embedding = embed_response.embeddings[0].values

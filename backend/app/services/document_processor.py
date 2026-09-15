@@ -104,7 +104,7 @@ def process_document(document_id: int):
         for chunk in chunks:
             # Generate embedding using the recommended model for embeddings
             response = client.models.embed_content(
-                model="text-embedding-004",
+                model="gemini-embedding-2",
                 contents=chunk["text"]
             )
             embedding_vector = response.embeddings[0].values
