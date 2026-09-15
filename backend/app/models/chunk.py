@@ -11,5 +11,5 @@ class DocumentChunk(Base):
     page_number = Column(Integer, nullable=True)  # Nullable for TXT files
     text_content = Column(Text, nullable=False)
     
-    # Gemini text-embedding-004 outputs 768 dimensions
-    embedding = Column(Vector(768), nullable=False)
+    # 3072 dimensions for gemini-embedding-2
+    embedding = Column(Vector(3072), nullable=False)
